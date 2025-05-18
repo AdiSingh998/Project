@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import './App.css'
 
+// import Fade from 'react-reveal/Fade';
+
 function App() {
   const [description, setDescription] = useState("");
   const [word, setWord] = useState(""); 

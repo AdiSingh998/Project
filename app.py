@@ -1,14 +1,19 @@
-import  os 
+import os 
 import random
 from flask import Flask, jsonify, request
 import requests
 from groq import Groq
 from flask_cors import CORS
+from dotenv import load_dotenv
+
+from typing import Optional
 
 app = Flask(__name__)
 CORS(app)
 
-client = Groq(api_key="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")
+load_dotenv()
+
+client = Groq(api_key=os.getenv('GROQKEY'))
 
 
 
