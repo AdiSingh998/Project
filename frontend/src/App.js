@@ -25,6 +25,7 @@ function App() {
   const [result, setResult] = useState("");
   const [revealed, setReveal] = useState("");
   const [shakeGuessButton, setShakeGuessButton] = useState(false);
+  const [score, setscore] = useState(0)
 
   const getRiddle = async () => {
     const res = await fetch("http://localhost:5000/generate");
@@ -37,6 +38,9 @@ function App() {
   };
 
   const submitGuess = async () => {
+    if (description === "") {
+      return;
+    }
     const res = await fetch("http://localhost:5000/guess", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -45,20 +49,28 @@ function App() {
     const data = await res.json();
     setResult(data.correct ? "Nice, you got it!" : "Try again.");
 
+    if (data.correct){
+      setscore(score+1);
+      getRiddle();
+    }
+
     if (!data.correct) {
     setShakeGuessButton(true);
+    setscore(0);
     setTimeout(() => setShakeGuessButton(false), 500); 
   }
   };
 
   const reveal = () => {
-    setReveal(word);
+    if (window.confirm("Are you sure you want to reveal? Your streak will reset.")) {
+      setReveal(word)
+    }
   };
 
   return (
     <div className="Game">
       <div className="card">
-      <Fade bottom></Fade>
+      <Fade bottom><div className="score-badge">Streak: {score}</div></Fade>
       <Fade><h1>Guess the Word</h1></Fade>
       <button onClick={getRiddle}>New Riddle</button>
       <p><strong>Description:</strong> {description}</p>
