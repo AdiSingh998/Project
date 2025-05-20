@@ -1,14 +1,30 @@
 import React, { useState } from "react";
-import './App.css'
+import './App.css';
 
-// import Fade from 'react-reveal/Fade';
+import styled, { keyframes, css } from 'styled-components';
+import { shake, fadeIn} from 'react-animations';
+
+const Fade = styled.div`
+  animation: 4s ${keyframes`${fadeIn}`};
+`;
+
+const shakeAnimation = keyframes`${shake}`;
+
+const ShakeButton = styled.button`
+  ${props =>
+    props.shake &&
+    css`
+      animation: 0.5s ${shakeAnimation};
+    `}
+`;
 
 function App() {
   const [description, setDescription] = useState("");
   const [word, setWord] = useState(""); 
   const [guess, setGuess] = useState("");
   const [result, setResult] = useState("");
-  const [revealed, setreveal] = useState("")
+  const [revealed, setReveal] = useState("");
+  const [shakeGuessButton, setShakeGuessButton] = useState(false);
 
   const getRiddle = async () => {
     const res = await fetch("http://localhost:5000/generate");
@@ -17,8 +33,10 @@ function App() {
     setWord(data.word); 
     setResult("");
     setGuess("");
+    setReveal("");
   };
-const submitGuess = async () => {
+
+  const submitGuess = async () => {
     const res = await fetch("http://localhost:5000/guess", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -26,27 +44,35 @@ const submitGuess = async () => {
     });
     const data = await res.json();
     setResult(data.correct ? "Nice, you got it!" : "Try again.");
-  };
-const reveal= async () => {
-  setreveal(word)
 
-}
+    if (!data.correct) {
+    setShakeGuessButton(true);
+    setTimeout(() => setShakeGuessButton(false), 500); 
+  }
+  };
+
+  const reveal = () => {
+    setReveal(word);
+  };
 
   return (
     <div className="Game">
-      <h1>Guess the Word</h1>
+      <div className="card">
+      <Fade bottom></Fade>
+      <Fade><h1>Guess the Word</h1></Fade>
       <button onClick={getRiddle}>New Riddle</button>
       <p><strong>Description:</strong> {description}</p>
       <input
         value={guess}
         onChange={(e) => setGuess(e.target.value)}
-        
       />
-      <button onClick={submitGuess}>Submit Guess</button>
+      <ShakeButton shake={shakeGuessButton} onClick={submitGuess}>
+  Submit Guess
+</ShakeButton>
       <p>{result}</p>
-
       <button onClick={reveal}>Reveal</button>
       <p>{revealed}</p>
+      </div>
     </div>
   );
 }

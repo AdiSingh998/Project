@@ -28,7 +28,7 @@ def generate():
         model="llama-3.3-70b-versatile"
     )
 
-    description = chatcomp.choices[0].message.content + f"The word is {len(w)} letters long"
+    description = chatcomp.choices[0].message.content + f" The word is {len(w)} letters long"
     return jsonify({"description": description, "word": w})
 
 @app.route("/guess", methods=["POST"])
